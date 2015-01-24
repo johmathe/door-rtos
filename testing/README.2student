@@ -1,0 +1,42 @@
+There are 4 coff object files provided for automated testing and they are
+
+rtxeval_mid1.o, 
+rtxeval_mid2.o, 
+rtxeval_mid3.o, 
+rtxeval_mid4.o
+
+In your make file add "-D_RTX_EVAL_" in CFLAGS will enable the #if defined 
+_RTX_EVAL_ section in rtx.h file
+
+You need to link your rtx object files together with the provided four object
+files  above to see th automated testing results. The auto test processes
+use dBUG monitor and please disable your own debug messages in on the dBUG
+monitor while you run the auto test processes. 
+
+Here is a sample output from the auto test processes
+
+------------------------------------------------------
+RTXEVAL: Test1 sending REQ #100
+RTXEVAL: Test2 received message #100 from PID 1
+RTXEVAL: Test2 sent message #100 to PID 3
+RTXEVAL: Test3 received message #100 from PID 2 
+RTXEVAL: Test3 sent message #120 to PID 2 
+RTXEVAL: Test2 received message #120 from PID 3
+RTXEVAL: Test1 Received result # 120 from PID 2, PASS
+RTXEVAL: Test1 sending REQ #101
+RTXEVAL: Test2 received message #101 from PID 1
+RTXEVAL: Test2 setting Test5 priority from 1 to LOW...
+RTXEVAL: Test5's new priority is: 1
+RTXEVAL: Test5 sent message #121 to PID 2 
+RTXEVAL: Test5 resetting its priority to LOWEST
+RTXEVAL: Test2 received message #121 from PID 5
+RTXEVAL: Test1 Received result # 121 from PID 2, FAIL
+RTXEVAL: Test1 sending REQ #102
+RTXEVAL: Test2 received message #102 from PID 1
+RTXEVAL: Test2 sent message #102 to PID 6 
+RTXEVAL: Test6 received message #102 from PID 2
+RTXEVAL: Test6 sent message #122 to PID 2
+RTXEVAL: Test2 received message #122 from PID 6 
+RTXEVAL: Test1 Received result # 122 from PID 2, PASS
+RTXEVAL: Final Evaluation Result is 0x5
+--------------------------------------------------------

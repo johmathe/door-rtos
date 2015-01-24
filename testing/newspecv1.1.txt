@@ -1,0 +1,104 @@
+Here is the initial state of each Testing processes
+
+Process Name	PID*	Priority
+TEST1		1	LOW
+TEST2		2	LOW
+TEST3		3	LOW
+TEST4		4	LOW
+TEST5		5	LOWEST
+TEST6		6	LOW
+
+*The PIDs will be changed to 1~6 in the code delivered to students
+
+TEST1 sends  to TEST2 the following testing request messages identified by REQ# below:
+  #100 M_TEST_IPC_REQ1
+  #101 M_TEST_PRIORITY_REQ1
+  #102 M_TEST_MEM_REQ1
+
+  Test1 waits for TEST2 to report all the testing result messages identified 
+  by RST# below  
+
+  #120 M_TEST_IPC_RST1
+  #121 M_TEST_PRIORITY_RST1
+  #122 M_TEST_MEM_RST1
+
+TEST2 receives the three testing requests.
+
+  M_TEST_IPC_REQ1 gets relayed to TEST3
+  M_TEST_PRIORITY changes the priority of TEST5 to LOW so that TEST5 can send 
+  message
+  M_TEST_MEM_REQ1 gets relayed to TEST6
+  
+  TEST2 then waits for TEST3, TEST5 and TEST6 to send the testing results back
+
+TEST3 does IPC testing
+  It sends a positive testing result back to TEST2 if upon receiving
+  the M_TEST_IPC_REQ1 message
+
+TEST4 does release_process infinitely at priority level of LOW
+
+TEST5 does priority setting testing
+  It sends the priority testing result back to TEST2 
+
+TEST6 does memory testing
+  It allocates two memory blocks and check whether they are the same or not.
+  If they are not, test passes, otherwise, test fails. The test result gets
+  sent back to TEST2
+
+
+Whenever a message is sent, janusROM terminal will output text indicating which
+message # has been sent from which process to which process. Similar text
+will show when a message is received by a process. Here is an example of
+output from the dBUG terminal:
+
+------------------------------------------------------
+RTXEVAL: Test1 sending REQ #100
+RTXEVAL: Test2 received message #100 from PID 1
+RTXEVAL: Test2 sent message #100 to PID 253
+RTXEVAL: Test3 received message #100 from PID 2
+RTXEVAL: Test3 sent message #120 to PID 254
+RTXEVAL: Test2 received message #120 from PID 3
+RTXEVAL: Test1 Received result # 120 from PID 2, PASS
+RTXEVAL: Test1 sending REQ #101
+RTXEVAL: Test2 received message #101 from PID 1
+RTXEVAL: Test2 setting Test5 priority from 1 to LOW...
+RTXEVAL: Test5's new priority is: 1
+RTXEVAL: Test5 sent message #121 to PID 2
+RTXEVAL: Test5 resetting its priority to LOWEST
+RTXEVAL: Test2 received message #121 from PID 5
+RTXEVAL: Test1 Received result # 121 from PID 2, FAIL
+RTXEVAL: Test1 sending REQ #102
+RTXEVAL: Test2 received message #102 from PID 1
+RTXEVAL: Test2 sent message #102 to PID 6
+RTXEVAL: Test6 received message #102 from PID 2
+RTXEVAL: Test6 sent message #122 to PID 2
+RTXEVAL: Test2 received message #122 from PID 6 
+RTXEVAL: Test1 Received result # 122 from PID 2, PASS
+RTXEVAL: Final Evaluation Result is 0x5
+--------------------------------------------------------
+
+How to read testing results:
+
+/* Testing Results are in the first 16 bit of the message */
+/* testing pass -> bit set to 1
+   testing fails-> bit set to 0
+
+   bit 3~15 will be filled with a certain pattern
+   to indicate this is a testing result message
+
+   The following diagram is the initial state of each
+   testing result bit
+
+ 15 14 13 12 11 10 09  08   07  06  05  04  03  02  01 00
+ ---------------------------------------------------------
+|  |  |  |  |  |  |   |   |   |   |   |   |   | 0 | 0 | 0 |
+ ---------------------------------------------------------
+                                                ^   ^   ^
+                                                |   |   |
+M_TEST_MEM_RST1---------------------------------+   |   |
+                                                    |   |
+M_TEST_PRIORITY_RST1--------------------------------+   |
+                                                        |
+M_TEST_IPC_RST1---------------------------------------->+
+*/
+

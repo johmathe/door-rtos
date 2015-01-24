@@ -1,0 +1,3 @@
+killall -9 coldfire
+coldfire --board /usr/local/share/coldfire/cjdesign-5307.board
+fg

@@ -1,0 +1,10 @@
+#!/usr/bin/expect --
+set timeout 3 
+spawn telnet cf-server 8000
+expect  "Please Pick \[1-3\]: $"
+send "1"
+expect "janusROM> "
+send "tftp -f e354g03.s19\r"
+expect "janusROM> "
+send  "go 0x10100000\r"
+interact
